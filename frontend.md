@@ -43,3 +43,94 @@ worker.js:
 ```js
 worker.postMessage();
 ```
+
+通信 Hello World
+
+Main script:
+
+```js
+var worker = new Worker("worker.js");
+
+worker.addEventListener(
+  "message",
+  function (e) {
+    console.log("Worker said: ", e.data);
+  },
+  false
+);
+
+worker.postMessage("Hello World"); // Send data to our worker.
+```
+
+worker.js:
+
+```js
+self.addEventListener(
+  "message",
+  function (e) {
+    self.postMessage(e.data);
+  },
+  false
+);
+```
+
+更复杂点的例子
+
+Main script:
+
+```html
+<button onclick="sayHI()">Say HI</button>
+<button onclick="unknownCmd()">Send unknown command</button>
+<button onclick="stop()">Stop worker</button>
+<output id="result"></output>
+
+<script>
+  function sayHI() {
+    worker.postMessage({ cmd: "start", msg: "Hi" });
+  }
+
+  function stop() {
+    // worker.terminate() from this script would also stop the worker.
+    worker.postMessage({ cmd: "stop", msg: "Bye" });
+  }
+
+  function unknownCmd() {
+    worker.postMessage({ cmd: "foobard", msg: "???" });
+  }
+
+  var worker = new Worker("worker.js");
+
+  worker.addEventListener(
+    "message",
+    function (e) {
+      document.getElementById("result").textContent = e.data;
+    },
+    false
+  );
+</script>
+```
+
+worker.js:
+
+```js
+self.addEventListener(
+  "message",
+  function (e) {
+    var data = e.data;
+    switch (data.cmd) {
+      case "start":
+        self.postMessage("WORKER STARTED: " + data.msg);
+        break;
+      case "stop":
+        self.postMessage(
+          "WORKER STOPPED: " + data.msg + ". (buttons will no longer work)"
+        );
+        self.close(); // Terminates the worker.
+        break;
+      default:
+        self.postMessage("Unknown command: " + data.msg);
+    }
+  },
+  false
+);
+```
