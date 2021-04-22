@@ -30,7 +30,7 @@ console.log(puzzle2.smell); // "banana"
 
 ## Service Worker
 
-Getting Started
+### Getting Started
 
 Main script:
 
@@ -44,7 +44,7 @@ worker.js:
 worker.postMessage();
 ```
 
-通信 Hello World
+### 通信 Hello World
 
 Main script:
 
@@ -74,7 +74,7 @@ self.addEventListener(
 );
 ```
 
-更复杂点的例子
+### 更复杂点的例子
 
 Main script:
 
